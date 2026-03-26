@@ -13,22 +13,22 @@ En Railway se montan como **dos servicios** dentro de **un solo proyecto**, cada
 
 1. En [Railway](https://railway.com): **New project** → **Empty project** (o importar el repo y luego ajustar).
 2. Añade **dos servicios** desde el mismo repositorio GitHub/GitLab.
-3. Renómbralos para que coincidan con las variables de referencia de abajo, por ejemplo:
+3. Renómbralos (o elige nombres fijos y usa **esos** nombres en las referencias `${{...}}`), por ejemplo:
    - **`api`** → backend
-   - **`web`** → frontend
+   - **`asegurazion`** (u otro nombre) → frontend
 
 ## 2. Root Directory
 
 En **Settings** de cada servicio:
 
-| Servicio | Root Directory |
-|----------|----------------|
-| `api`    | `backend`      |
-| `web`    | `frontend`     |
+| Servicio (ejemplo) | Root Directory |
+|--------------------|----------------|
+| `api`              | `backend`      |
+| `asegurazion`      | `frontend`     |
 
 ## 3. Variables de entorno
 
-### Servicio `web` (frontend)
+### Servicio del frontend (ej. `asegurazion`)
 
 Necesarias en **build** (Vite inyecta `VITE_*` en tiempo de compilación):
 
@@ -44,7 +44,7 @@ Opcional en local: copia `frontend/.env.example` a `frontend/.env` y usa `http:/
 
 | Nombre | Valor sugerido |
 |--------|----------------|
-| `CORS_ORIGINS` | `https://${{web.RAILWAY_PUBLIC_DOMAIN}}` |
+| `CORS_ORIGINS` | `https://${{asegurazion.RAILWAY_PUBLIC_DOMAIN}}` (ajusta el nombre del servicio si no es `asegurazion`) |
 
 Añade también las credenciales de integraciones según `backend/.env.example` (MAPFRE, SURA, etc.). **No** subas secretos al repositorio.
 
@@ -52,15 +52,19 @@ Añade también las credenciales de integraciones según `backend/.env.example` 
 
 En cada servicio: **Settings → Networking → Generate Domain** para obtener HTTPS.
 
-Orden recomendado: despliega primero `api`, genera su dominio, luego configura `VITE_API_BASE_URL` en `web` y despliega `web`. Actualiza `CORS_ORIGINS` en `api` con el dominio de `web` y vuelve a desplegar `api` si hace falta.
+Orden recomendado: despliega primero el servicio del **backend**, genera su dominio, luego configura `VITE_API_BASE_URL` en el servicio del **frontend** (p. ej. `asegurazion`) y despliega el front. Actualiza `CORS_ORIGINS` en el API con el dominio del front y vuelve a desplegar el API si hace falta. Si renombraste los servicios, usa en las referencias `${{NombreExactoEnRailway.RAILWAY_PUBLIC_DOMAIN}}`.
 
 ## 5. Comandos (referencia)
 
-Los archivos `railway.toml` en `backend/` y `frontend/` fijan arranque, healthcheck y rutas de observación de cambios. El backend usa `Procfile` + `uvicorn`; el frontend usa `npm run start` → `vite preview` sirviendo `dist/` con el puerto `PORT` de Railway.
+Los archivos `railway.toml` en `backend/` y `frontend/` fijan arranque, healthcheck y rutas de observación de cambios. El backend usa `uvicorn` en el puerto `PORT`. El frontend ejecuta `npm run start`, que llama a `scripts/serve-production.mjs` y sirve `dist/` con **`serve`** escuchando en **`0.0.0.0:$PORT`** (obligatorio en Railway; escuchar solo en `localhost` provoca **502 Bad Gateway** en el dominio público).
 
 ## 6. Comprobaciones
 
 - API: `GET https://<dominio-api>/health` → `{"status":"ok"}`
 - Web: abrir el dominio del frontend en el navegador.
+
+### Si el front devuelve 502
+
+Comprueba en los logs del deploy una línea como `Accepting connections at http://0.0.0.0:<puerto>` (no solo `localhost`). El **Networking → Port** del servicio debe coincidir con el puerto que asigna Railway (`PORT`), suele ser **3000**.
 
 Cuando el frontend consuma el API, usa `API_BASE_URL` desde `src/lib/api-config.ts` (basado en `VITE_API_BASE_URL`).

@@ -3,10 +3,10 @@
 
 [build]
 buildCommand = "npm run build"
-watchPatterns = ["src/**", "public/**", "index.html", "vite.config.ts", "package.json", "tailwind.config.js", "postcss.config.js"]
+watchPatterns = ["src/**", "scripts/**", "public/**", "index.html", "vite.config.ts", "package.json", "tailwind.config.js", "postcss.config.js"]
 
 [deploy]
-# serve (dependency) sirve dist/; usa la variable PORT de Railway (no uses vite preview en prod: vite es devDependency)
+# Escucha en 0.0.0.0 (ver scripts/serve-production.mjs); localhost-only causa 502 en Railway
 startCommand = "npm run start"
 healthcheckPath = "/"
 healthcheckTimeout = 120
