@@ -1,0 +1,10 @@
+# Configuración del servicio web (Root Directory en Railway: /frontend)
+# https://docs.railway.com/reference/config-as-code
+
+[build]
+watchPatterns = ["src/**", "public/**", "index.html", "vite.config.ts", "package.json", "tailwind.config.js", "postcss.config.js"]
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/"
+healthcheckTimeout = 120
