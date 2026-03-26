@@ -6,6 +6,6 @@ buildCommand = "npm run build"
 watchPatterns = ["src/**", "public/**", "index.html", "vite.config.ts", "package.json", "tailwind.config.js", "postcss.config.js"]
 
 [deploy]
-startCommand = "vite preview --host 0.0.0.0 --port $PORT --strictPort"
-healthcheckPath = "/"
+startCommand = "npm run start -- --host 0.0.0.0 --port $PORT --strictPort"
+healthcheckPath = "/index.html"
 healthcheckTimeout = 120
