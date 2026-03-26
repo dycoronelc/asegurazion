@@ -6,6 +6,7 @@ buildCommand = "npm run build"
 watchPatterns = ["src/**", "public/**", "index.html", "vite.config.ts", "package.json", "tailwind.config.js", "postcss.config.js"]
 
 [deploy]
-startCommand = "npm run start -- --host 0.0.0.0 --port $PORT --strictPort"
-healthcheckPath = "/index.html"
+# serve (dependency) sirve dist/; usa la variable PORT de Railway (no uses vite preview en prod: vite es devDependency)
+startCommand = "npm run start"
+healthcheckPath = "/"
 healthcheckTimeout = 120
