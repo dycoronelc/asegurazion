@@ -55,6 +55,7 @@ class MapfreClient:
                 headers={
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Accept": "application/json",
+                    "tipo_validacion": settings.mapfre_tipo_validacion,
                 },
             )
             try:

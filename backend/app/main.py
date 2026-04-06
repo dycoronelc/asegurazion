@@ -34,7 +34,9 @@ async def health():
 
 
 @app.get("/integrations/status")
+@app.post("/integrations/status")
 async def integrations_status():
+    """GET o POST: algunas herramientas usan POST por error; ambos devuelven el mismo JSON."""
     return {
         "mapfre": {"configured": mapfre_client.configured()},
         "sura": {
@@ -44,6 +46,16 @@ async def integrations_status():
         "iseguros": {"configured": iseguros_client.configured()},
         "optima": {"configured": optima_client.configured()},
     }
+
+
+@app.get("/integrations/mapfre/token")
+async def mapfre_token_get_not_allowed():
+    """El navegador usa GET; el token MAPFRE debe pedirse con POST (sin body en nuestro API: usa variables de entorno)."""
+    raise HTTPException(
+        status_code=405,
+        headers={"Allow": "POST"},
+        detail="Usa POST en esta misma URL. GET (p. ej. abrir en el navegador) no está permitido.",
+    )
 
 
 @app.post("/integrations/mapfre/token")

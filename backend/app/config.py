@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     mapfre_client_secret: str = ""
     # true = MAPFRE_USERNAME / MAPFRE_PASSWORD ya vienen en Base64 en el .env (no volver a codificar)
     mapfre_credentials_already_base64: bool = False
+    # Header obligatorio en el POST al token (documentación MAPFRE Panamá / Postman)
+    mapfre_tipo_validacion: str = "PASSWORD"
 
     sura_oauth_url: str = "https://iservice01.segurossura.com.pa/TokenService/resources/tokenservice"
     sura_client_id: str = ""
