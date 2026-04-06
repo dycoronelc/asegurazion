@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     mapfre_credentials_already_base64: bool = False
     # Header obligatorio en el POST al token (documentación MAPFRE Panamá / Postman)
     mapfre_tipo_validacion: str = "PASSWORD"
+    # Producción: muchos entornos MAPFRE exigen el usuario WS en el JSON además del Bearer
+    mapfre_produccion_incluir_usuario: bool = True
 
     sura_oauth_url: str = "https://iservice01.segurossura.com.pa/TokenService/resources/tokenservice"
     sura_client_id: str = ""

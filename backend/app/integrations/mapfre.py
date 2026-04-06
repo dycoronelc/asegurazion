@@ -72,13 +72,22 @@ class MapfreClient:
     async def get_produccion(self, access_token: str, fecha_desde: str, fecha_hasta: str) -> dict:
         """POST api/apiexterno/MAPFRE/produccion (INFORME_TECNICO.md)."""
         url = f"{self._api_base}/api/apiexterno/MAPFRE/produccion"
+        payload: dict[str, str] = {
+            "fechaDesde": fecha_desde,
+            "fechaHasta": fecha_hasta,
+        }
+        # Evita «Error al comprobar usuario» cuando el API valida el usuario WS en el cuerpo
+        if settings.mapfre_produccion_incluir_usuario and settings.mapfre_username:
+            payload["usuario"] = settings.mapfre_username.strip()
         async with httpx.AsyncClient(timeout=120.0) as client:
             r = await client.post(
                 url,
-                json={"fechaDesde": fecha_desde, "fechaHasta": fecha_hasta},
+                json=payload,
                 headers={
                     "Authorization": f"Bearer {access_token}",
                     "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "tipo_validacion": settings.mapfre_tipo_validacion,
                 },
             )
             try:
