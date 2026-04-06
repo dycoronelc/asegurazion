@@ -68,3 +68,18 @@ Los archivos `railway.toml` en `backend/` y `frontend/` fijan arranque, healthch
 Comprueba en los logs del deploy una línea como `Accepting connections at http://0.0.0.0:<puerto>` (no solo `localhost`). El **Networking → Port** del servicio debe coincidir con el puerto que asigna Railway (`PORT`), suele ser **3000**.
 
 Cuando el frontend consuma el API, usa `API_BASE_URL` desde `src/lib/api-config.ts` (basado en `VITE_API_BASE_URL`).
+
+## 7. Piloto MAPFRE (validar credenciales)
+
+En el servicio del **backend** (variables de entorno), copia desde `backend/.env.example`:
+
+- `MAPFRE_USERNAME`, `MAPFRE_PASSWORD` en **texto plano** en variables de entorno; el backend los codifica a **Base64** al llamar al endpoint de token (requisito MAPFRE Panamá).
+- Si el manual OAuth pide aplicación registrada: `MAPFRE_CLIENT_ID` y `MAPFRE_CLIENT_SECRET`.
+
+Prueba en este orden (sustituye la URL base del API desplegado):
+
+1. `GET .../integrations/status` → `mapfre.configured` debe ser `true`.
+2. `POST .../integrations/mapfre/token` → debe devolver JSON con `access_token` (si falla, el detalle incluye el cuerpo de error de MAPFRE para depurar).
+3. `GET .../integrations/mapfre/produccion?fecha_desde=YYYY-MM-DD&fecha_hasta=YYYY-MM-DD` → rango corto (p. ej. últimos 7 días) según lo que permita el manual.
+
+Si `produccion` devuelve 400/404, el cuerpo del error de MAPFRE indica si faltan campos en el JSON o otro path; ajústalo según la documentación oficial que tengáis.

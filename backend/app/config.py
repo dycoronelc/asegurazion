@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     mapfre_api_base: str = "https://app1.mapfre.com.pa/panama/webapi"
     mapfre_username: str = ""
     mapfre_password: str = ""
+    # Algunos entornos OAuth exigen client_id / client_secret; déjalos vacíos si no aplican
+    mapfre_client_id: str = ""
+    mapfre_client_secret: str = ""
 
     sura_oauth_url: str = "https://iservice01.segurossura.com.pa/TokenService/resources/tokenservice"
     sura_client_id: str = ""
