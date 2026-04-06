@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     # Algunos entornos OAuth exigen client_id / client_secret; déjalos vacíos si no aplican
     mapfre_client_id: str = ""
     mapfre_client_secret: str = ""
+    # true = MAPFRE_USERNAME / MAPFRE_PASSWORD ya vienen en Base64 en el .env (no volver a codificar)
+    mapfre_credentials_already_base64: bool = False
 
     sura_oauth_url: str = "https://iservice01.segurossura.com.pa/TokenService/resources/tokenservice"
     sura_client_id: str = ""

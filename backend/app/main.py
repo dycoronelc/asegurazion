@@ -1,12 +1,13 @@
 import asyncio
 from datetime import date
 
+import httpx
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.integrations.iseguros import iseguros_client
-from app.integrations.mapfre import mapfre_client
+from app.integrations.mapfre import mapfre_client, mapfre_http_error_detail
 from app.integrations.optima import optima_client
 from app.integrations.sura import sura_client
 
@@ -51,6 +52,13 @@ async def mapfre_token():
         return await mapfre_client.get_token()
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
+    except httpx.HTTPStatusError as e:
+        # Por si el error escapa sin convertirse en RuntimeError (p. ej. versión antigua desplegada)
+        raise HTTPException(status_code=502, detail=mapfre_http_error_detail(e)) from e
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e)) from e
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=502, detail=f"Error de red hacia MAPFRE: {e!s}") from e
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e)) from e
 
@@ -71,6 +79,12 @@ async def mapfre_produccion(
         raise HTTPException(status_code=400, detail=str(e)) from e
     except HTTPException:
         raise
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=502, detail=mapfre_http_error_detail(e)) from e
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e)) from e
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=502, detail=f"Error de red hacia MAPFRE: {e!s}") from e
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e)) from e
 
