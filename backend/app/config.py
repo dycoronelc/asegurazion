@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     mapfre_tipo_validacion: str = "PASSWORD"
     # Producción: muchos entornos MAPFRE exigen el usuario WS en el JSON además del Bearer
     mapfre_produccion_incluir_usuario: bool = True
+    # Si true, fechaDesde/fechaHasta se envían como DD/MM/YYYY (entrada del API sigue siendo YYYY-MM-DD en query)
+    mapfre_produccion_fechas_dd_mm_yyyy: bool = False
 
     sura_oauth_url: str = "https://iservice01.segurossura.com.pa/TokenService/resources/tokenservice"
     sura_client_id: str = ""
@@ -36,6 +38,15 @@ class Settings(BaseSettings):
         "WebServices_TopLinkPlSqlProviderService?WSDL"
     )
     optima_corredor_code: str = ""
+
+    # ASSA (Azure APIM) — sandbox por defecto; producción: URLs del portal developer.assanet.com
+    assa_token_url: str = "https://apidev.assanet.com/authentication-ms/connect/token"
+    assa_gateway_base: str = "https://apidev.assanet.com/gateway/uri"
+    assa_client_id: str = ""
+    assa_client_secret: str = ""
+    assa_username: str = ""
+    assa_password: str = ""
+    assa_application_key: str = ""
 
 
 settings = Settings()

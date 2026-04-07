@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+from datetime import datetime
 
 import httpx
 
@@ -25,6 +26,18 @@ def _credential_value(raw: str, already_base64: bool) -> str:
     if already_base64:
         return s
     return _b64_utf8(s)
+
+
+def _fecha_produccion_valor(fecha_iso_yyyy_mm_dd: str) -> str:
+    """Convierte query YYYY-MM-DD al formato que espera MAPFRE en el JSON."""
+    s = fecha_iso_yyyy_mm_dd.strip()
+    try:
+        d = datetime.strptime(s, "%Y-%m-%d")
+    except ValueError as e:
+        raise ValueError("fecha_desde/fecha_hasta deben ser YYYY-MM-DD") from e
+    if settings.mapfre_produccion_fechas_dd_mm_yyyy:
+        return d.strftime("%d/%m/%Y")
+    return s
 
 
 class MapfreClient:
@@ -73,8 +86,8 @@ class MapfreClient:
         """POST api/apiexterno/MAPFRE/produccion (INFORME_TECNICO.md)."""
         url = f"{self._api_base}/api/apiexterno/MAPFRE/produccion"
         payload: dict[str, str] = {
-            "fechaDesde": fecha_desde,
-            "fechaHasta": fecha_hasta,
+            "fechaDesde": _fecha_produccion_valor(fecha_desde),
+            "fechaHasta": _fecha_produccion_valor(fecha_hasta),
         }
         # Evita «Error al comprobar usuario» cuando el API valida el usuario WS en el cuerpo
         if settings.mapfre_produccion_incluir_usuario and settings.mapfre_username:
